@@ -8,7 +8,6 @@ import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/log-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
 import { MailService } from 'src/mail/mail.service';
-import Mail from 'nodemailer/lib/mailer';
 
 @Injectable()
 export class AuthService {
@@ -61,8 +60,7 @@ export class AuthService {
     );
     if (!user || !await bcrypt.compare(loginDto.password, user.password))
       throw new BadRequestException('Invalid Credentials');
-    const { password, ...result } = user;
     const token = this.jwtService.sign({ id: user.id });
-    return { user: result, token };
+    return { ...user, token };
   }
 }

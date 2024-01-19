@@ -17,7 +17,7 @@ export class UsersService {
   }
 
   async create(user: User): Promise<User> {
-    return await this.userRepo.create(user)
+    return await this.userRepo.save(user)
   }
 
   async deleteOne(id:string): Promise<boolean> {

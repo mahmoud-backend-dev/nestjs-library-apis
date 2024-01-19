@@ -1,10 +1,18 @@
-import { Body, Controller, HttpException, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Post,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/sign-up.dto';
 import { LoginDto } from './dto/log-in.dto';
 import { JwtAuthGuard } from './guards/jwt.guard';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { User } from 'src/users/entity/user.entity';
+import { SanitizerUser } from './interceptors/user-sanitize.interceptor';
 
 @Controller({
   path: 'auth',
@@ -33,10 +41,11 @@ export class AuthController {
   }
 
   @Post('login')
+  @UseInterceptors(ClassSerializerInterceptor)
   async login(
     @Body()
     loginDto:LoginDto
   ): Promise<object>{
-    return await this.authService.login(loginDto);
+    return new SanitizerUser(await this.authService.login(loginDto));
   }
 }
